@@ -1,0 +1,53 @@
+version: "3.8"
+
+services:
+  localstack:
+    image: localstack/localstack:1.3.0
+    platform: linux/amd64
+    container_name: golang-localstack-container-localstack
+    environment:
+      SERVICES: "s3"
+      DEFAULT_REGION: "us-east-1"
+      HOSTNAME: "localstack"
+      HOSTNAME_EXTERNAL: "localstack"
+      INIT_SCRIPTS_PATH: /docker-entrypoint-initaws.d
+      DATA_DIR: /tmp/localstack/data
+    ports:
+      - "4566:4566"
+      - "4571:4571"
+    volumes:
+    - ./docker/localstack/init:/docker-entrypoint-initaws.d
+    - ./docker/localstack/json:/json:ro
+    - ./docker/localstack/csv:/csv:ro
+    - ./docker/localstack/keys:/keys:rw
+
+  golang:
+    image: golang-localstack/golang:latest
+    build: 
+      context: .
+      dockerfile: docker/golang/Dockerfile
+    container_name: golang-localstack-container-golang
+    depends_on:
+      - localstack
+    environment:
+      TZ: Asia/Tokyo
+      CGO_ENABLED: "0"
+      GOOS: linux
+      GOARCH: amd64
+      AWS_ACCESS_KEY_ID: "test"
+      AWS_SECRET_ACCESS_KEY: "test"
+      AWS_DEFAULT_REGION: "us-east-1"
+      S3_ENDPOINT: "http://localstack:4566"
+    ports:
+      - "4000:4000"
+    networks:
+      - default
+    volumes:
+      - .:/app:rw
+    working_dir: /app
+    tty: true
+
+networks:
+  default:
+    name: golang-localstack-network-default
+    

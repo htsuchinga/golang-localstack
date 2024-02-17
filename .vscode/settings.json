@@ -1,0 +1,14 @@
+{
+    "[go]": {
+        "editor.defaultFormatter": "golango.go",
+        "editor.tabSize": 4,
+        "editor.insertSpaces": false,
+        "editor.formatOnSave": true,
+        "editor.formatOnPaste": false,
+        "editor.formatOnType": false
+    },
+    "go.useLanguageServer": true,
+    "gopls": {
+        "formatting.local": "github.com/htsuchinga/golang-localstack"
+    }
+}
